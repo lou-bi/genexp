@@ -1,13 +1,39 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + TS</title>
-  </head>
-  <body>
-    <h1 id="framerate">yo</h1>
-    <script type="module" src="/src/sketch.js"></script>
-  </body>
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Vite + TS</title>
+    </head>
+    <body style="padding: 2rem">
+        <div style="width: 100%; margin-bottom: 2rem;">
+            <p>Framerate: <span id="framerate">100</span></p>
+            <button id="button-play">⏸️</button>
+            <div>
+                <label>Z offset</label>
+                <input type="range" id="zoff-slider" value="0" min="0" max="100" step="0.001">
+                <span id="zoff-label"></span>
+            </div> 
+            <div>
+                <label>Background opacity</label>
+                <input type="range" id="bg-op-slider" value="30" min="0" max="255" step="1">
+                <span id="bg-op-label"></span>
+            </div>
+            <!-- <div> -->
+            <!--     <label for="body">Background color</label> -->
+            <!--     <input type="color" id="bg-color" value="#000000" /> -->
+            <!-- </div> -->
+            <div>
+                <label>Particles opacity</label>
+                <input type="range" id="particles-op-slider" value="30" min="0" max="255" step="1">
+                <span id="particles-op-label"></span>
+            </div>
+            <!-- <div> -->
+            <!--     <label for="body">Particles color</label> -->
+            <!--     <input type="color" id="particles-color" value="#FFFFFF" /> -->
+            <!-- </div> -->
+        </div>
+        <script type="module" src="/src/sketch.js"></script>
+    </body>
 </html>
