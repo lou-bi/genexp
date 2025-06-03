@@ -1,4 +1,4 @@
-export function generateFlowField(rows, cols, inc = 0.05) {
+export function generateFlowField(rows, cols, inc = 0.01) {
     const flowField = []
 
     let yoff = 0
@@ -6,9 +6,9 @@ export function generateFlowField(rows, cols, inc = 0.05) {
         let xoff = 0
         flowField.push([])
         for (let x = 0; x < cols; x++) {
-            const a = noise(xoff, yoff) * PI
+            const a = noise(xoff, yoff) * TAU * 2
             const v = Vector.fromAngle(a)
-            v.setMag(1)
+            v.setMag(10)
 
             flowField[y].push(v)
 

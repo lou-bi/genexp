@@ -51,11 +51,12 @@ document.querySelector('#particles-color')?.addEventListener('change', (e) => {
     particlesColor = e.target.value
 })
 
+let cw = 800
+let ch = 800
 let particles: Particle[] = []
-let numParticles = 100
-
+let numParticles = 1000
 let flowField = []
-let scale = 10
+let scale = 20
 let rows, cols
 let zoff
 
@@ -66,45 +67,67 @@ zoffSlider.addEventListener("input", (event) => {
     // flowField = generateFlowField()
 });
 
-let cw = 800
-let ch = 800
 function setup() {
-    createCanvas(800, 800);
+    createCanvas(cw, ch);
     window.COLOR_MODE = RGB
     colorMode(COLOR_MODE)
     textSize(20)
 
     const spawnOffset = floor(width / 3)
     const spawnMargin = 5
-    for (let i = 0; i < numParticles; i++) {
+    const PARTICLE_SCL = 5
+    for (let i = 0; i < width; i += PARTICLE_SCL) {
         // particles.push(new Particle(width, spawnOffset + i * spawnMargin))
-        particles.push(new Particle(spawnOffset + i * spawnMargin, 0))
+        // particles.push(new Particle(i * 5, 0))
+        particles.push(new Particle(i, 0))
+        particles.push(new Particle(i, height))
+        // particles.push(new Particle(width / 2, height / 2))
+    }
+    for (let i = 0; i < height; i += PARTICLE_SCL) {
+        // particles.push(new Particle(width, spawnOffset + i * spawnMargin))
+        // particles.push(new Particle(i * 5, 0))
+        particles.push(new Particle(0, i))
+        particles.push(new Particle(width, i))
+        // particles.push(new Particle(width / 2, height / 2))
     }
 
     rows = floor(height / 2)
     cols = floor(width / 2)
-    flowField = generateFlowField(rows, cols)
+    flowField = generateFlowField(rows, cols, 0.03)
+    const MAX_ITER = 800
+    for (const p of particles) {
+        p.savePos()
+        for (let i = 0; i < MAX_ITER; i++) {
+
+            const xI = constrain(floor(p.pos.x / scale), 0, cols - 1)
+            const yI = constrain(floor(p.pos.y / scale), 0, rows - 1)
+            const ff = flowField[yI][xI]
+
+            p.applyForce(ff)
+            p.update()
+            p.savePos()
+        }
+    }
     // stroke(255, 20)
     // strokeWeight(1)
     background(0)
 }
 
 function draw() {
+    stroke(255, 20)
+    noStroke()
+    fill(255, 3)
+    noFill()
     for (const p of particles) {
-        const xI = constrain(floor(p.pos.x / scale), 0, cols - 1)
-        const yI = constrain(floor(p.pos.y / scale), 0, rows - 1)
-        const ff = flowField[yI][xI]
 
-        p.applyForce(ff)
-        p.update()
-        p.drawMono()
+        p.drawBezier()
+
     }
-
+    noLoop()
     setFrameRate()
 
 };
 function mousePressed() {
-    console.log('oaoao')
     if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
         let fs = fullscreen();
         cw = windowWidth
@@ -133,4 +156,4 @@ function drawArrow(from: Vector, to: Vector) {
 
 window.draw = draw
 window.setup = setup
-window.mousePressed = mousePressed
+// window.mousePressed = mousePressed

@@ -9,7 +9,7 @@ const colorPalette = [
 
 export class Particle {
     pos: Vector
-    prevPos: Vector
+    prevPos: Vector[]
     vel: Vector
     acc: Vector
     size: number
@@ -18,9 +18,10 @@ export class Particle {
     alive: boolean
     constructor(x: number, y: number, size: number = 2) {
         this.pos = new Vector(x, y)
-        this.vel = new Vector(random(-2, 2), random(-2, 2))
+        this.vel = new Vector(0, 0)
+        // this.vel = new Vector(random(-2, 2), random(-2, 2))
         this.acc = new Vector(random(0, 2), random(0, 2))
-        // this.size = random(2, 10)
+        this.prevPos = []
         this.size = random()
         this.color = random(colorPalette)
         this.strokeColor = random(colorPalette)
@@ -30,8 +31,6 @@ export class Particle {
     }
 
     update() {
-        this.prevPos = this.pos.copy()
-
         // this.vel.add(this.acc)
         // this.vel.limit(2)
         this.pos.add(this.vel)
@@ -45,6 +44,9 @@ export class Particle {
         if (this.lifeTime <= 0) this.alive = false
     }
 
+    savePos() {
+        this.prevPos.push(this.pos.copy())
+    }
     applyForce(v: Vector) {
         this.vel = v.copy()
         // const f = v.copy()
@@ -68,7 +70,8 @@ export class Particle {
 
     }
     draw() {
-        const alpha = this.size
+        const alpha = 0
+        // const alpha = this.size
         let c = new Color(
             map(this.pos.x, 0, width, 0, 255),
             map(this.pos.y, 0, height, 0, 255),
@@ -100,6 +103,29 @@ export class Particle {
         point(this.pos.x, this.pos.y)
     }
 
+    drawBezier(close: boolean = false) {
+        const vertices = []
+        for (let i = 1; i < this.prevPos.length - 1; i++) {
+            const p = this.prevPos[i]
+            let c1 = this.prevPos[i - 1]
+            let c2 = this.prevPos[i + 1]
+
+            vertices.push([c1.x, c1.y, c2.x, c2.y, p.x, p.y])
+        }
+        const c = color(this.color + '50')
+        // c.setAlpha(.2)
+        fill(c)
+        // stroke(this.color)
+        beginShape()
+        vertex(this.prevPos[0].x, this.prevPos[0].y)
+        for (let i = 1; i < vertices.length; i++) {
+            bezierVertex(...vertices[i])
+            vertex(...vertices[i])
+        }
+        vertex(this.prevPos[this.prevPos.length - 1].x, this.prevPos[this.prevPos.length - 1].y)
+        if (close) endShape(CLOSE)
+        else endShape()
+    }
     drawTrails() {
         // line(this.prevPos.x, this.prevPos.y, this.pos.x, this.pos.y)
         line(this.pos.x, this.pos.y, this.prevPos.x - 1, this.prevPos.y - 1)
